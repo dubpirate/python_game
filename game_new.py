@@ -159,6 +159,7 @@ class Character:
             self.speed = classes[clss][0][1]
             self.ac = classes[clss][0][2] #ac stands for Armour Class
             self.hp = classes[clss][0][3]
+            self.max_hp = classes[clss][0][3]
             print(classes[clss][1])
             choice = int(input('- '))
             if choice == 1:
@@ -265,66 +266,74 @@ while bool(players) == True:
 
     _ = input('\nPress any key to continue')
 
-    for player_1 in players:
-        print('\nYour turn',player_1.p_name)
-        '''
-            _choices = {
-            'a':attack,
-            'h':heal,
-            'n':nothing
-            }
-        '''
-        actions = player_1.speed
-        while actions > 0:
-            print('')
-            print('You got',actions,'actions left')
-            print('What you do:')
-            print(' i: inventory \n a: attack \n h: use a health potion \n')
-            choice = str(input('- '))
-            if choice.lower() == 'i':
-                print("Items:",player_1.inventory['items'],'\nWeapons:',str(player_1.inventory['weps']))
+    while bool(numbered_opponents) == True:
+        for player_1 in players:
+            print('\nYour turn',player_1.p_name)
+            '''
+                _choices = {
+                'a':attack,
+                'h':heal,
+                'n':nothing
+                }
+                '''
+            actions = player_1.speed
+            while actions > 0:
+                print('')
+                print('You got',actions,'actions left')
+                print('What you do:')
+                print(' i: inventory \n a: attack \n h: use a health potion \n')
+                choice = str(input('- '))
+                if choice.lower() == 'i':
+                    print("Items:",player_1.inventory['items'],'\nWeapons:',str(player_1.inventory['weps']))
 
-            elif choice.lower() == 'a':
-                damage, target = attack(player_1, numbered_opponents)
-                if damage == None and target == None:
-                    break
-                numbered_opponents[target].hp -= damage
-                if numbered_opponents[target].hp < 1:
-                    print('\nThe',numbered_opponents[target].name,'died. \n')
-                    del numbered_opponents[target]
-                actions -= 1
+                elif choice.lower() == 'a':
+                    damage, target = attack(player_1, numbered_opponents)
+                    if damage == None and target == None:
+                        break
 
-            elif choice.lower() == 'h':
-                print('\nYou used a health potion to heal. \n')
-                player_1.hp = player_1.max_hp
-                print('You have',player_1.hp,'health points left. \n')
-                actions -= 1
-            _ = input('Press any key to continue.')
+                    numbered_opponents[target].hp -= damage
+                    if numbered_opponents[target].hp < 1:
+                        print('\nThe',numbered_opponents[target].name,'died. \n')
+                        del numbered_opponents[target]
 
-        if bool(numbered_opponents) == False:
-            print('The room is quiet. \n')
-            print('In the rubble you each find',loot,'pieces of gold.')
-            for player in players:
-                player.inventory['gold'] += loot
-            _ = input('\nPress any key to continue')
+                    actions -= 1
 
-        else:
-            iter_val = 0
-            for item in numbered_opponents:
-                if opponents[iter_val].dam - player_1.ac <= 0:
-                    print(' The', opponents[iter_val].name + "'s attack was uneffective and did no damage.")
-                else:
-                    print(' The', opponents[iter_val].name, 'does',opponents[iter_val].dam - player_1.ac, 'damage.')
-                    player_1.hp = player_1.hp - (opponents[iter_val].dam - player_1.ac)
-                iter_val += 1
-                print('\nYou now have',player_1.hp,'health left')
+                elif choice.lower() == 'h':
+                    print('\nYou used a health potion to heal. \n')
+                    player_1.hp = player_1.max_hp
+                    print('You have',player_1.hp,'health points left. \n')
+                    actions -= 1
+
                 _ = input('Press any key to continue.')
 
-        if player_1.hp <= 0:
-            print('Shit son, you dead.')
-            _ = input('Press any key to continue.')
-            dead_players.append(player_1)
-            del player_1
+            if bool(numbered_opponents) == False:
+                print('The room is quiet. \n')
+                print('In the rubble you each find',loot,'pieces of gold.')
+                for player in players:
+                    player.inventory['gold'] += loot
+
+                _ = input('\nPress any key to continue')
+
+            else:
+                iter_val = 0
+                for item in numbered_opponents:
+                    if opponents[iter_val].dam - player_1.ac <= 0:
+                        print(' The', opponents[iter_val].name + "'s attack was uneffective and did no damage.")
+
+                    else:
+                        print(' The', opponents[iter_val].name, 'does',opponents[iter_val].dam - player_1.ac, 'damage.')
+                        player_1.hp = player_1.hp - (opponents[iter_val].dam - player_1.ac)
+
+                    iter_val += 1
+                    print('\nYou now have',player_1.hp,'health left')
+
+                _ = input('Press any key to continue.')
+
+            if player_1.hp <= 0:
+                print('Shit son, you dead.')
+                dead_players.append(player_1)
+                players.remove(player_1)
+                _ = input('Press any key to continue.')
 
 
 
