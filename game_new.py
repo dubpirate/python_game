@@ -242,6 +242,7 @@ for player in range(1,num_players+1):
     players.append(Character(player))
 
 while bool(players) == True:
+    first_run = True
     enemies = randint(1,3) # Chooses how many enemies to create
     loot = randint(10, 50)
     num_oppo = enemies
@@ -277,6 +278,9 @@ while bool(players) == True:
                 }
                 '''
             actions = player_1.speed
+            if first_run == True:
+                actions += player_1.stealth
+                first_run = False
             while actions > 0:
                 print('')
                 print('You got',actions,'actions left')
@@ -318,14 +322,14 @@ while bool(players) == True:
                 iter_val = 0
                 for item in numbered_opponents:
                     if opponents[iter_val].dam - player_1.ac <= 0:
-                        print(' The', opponents[iter_val].name + "'s attack was uneffective and did no damage.")
+                        print('\nThe', opponents[iter_val].name + "'s attack was uneffective and did no damage.")
 
                     else:
                         print(' The', opponents[iter_val].name, 'does',opponents[iter_val].dam - player_1.ac, 'damage.')
                         player_1.hp = player_1.hp - (opponents[iter_val].dam - player_1.ac)
 
                     iter_val += 1
-                    print('\nYou now have',player_1.hp,'health left')
+                    print('You now have',player_1.hp,'health left \n')
 
                 _ = input('Press any key to continue.')
 
@@ -333,7 +337,7 @@ while bool(players) == True:
                 print('Shit son, you dead.')
                 dead_players.append(player_1)
                 players.remove(player_1)
-                _ = input('Press any key to continue.')
+                numbered_opponents = []
 
 
 
