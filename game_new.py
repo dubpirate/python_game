@@ -299,6 +299,7 @@ while bool(players) == True:
                     if numbered_opponents[target].hp < 1:
                         print('\nThe',numbered_opponents[target].name,'died. \n')
                         del numbered_opponents[target]
+                        opponents.remove(target)
 
                     actions -= 1
 
@@ -325,7 +326,7 @@ while bool(players) == True:
                         print('\nThe', opponents[iter_val].name + "'s attack was uneffective and did no damage.")
 
                     else:
-                        print(' The', opponents[iter_val].name, 'does',opponents[iter_val].dam - player_1.ac, 'damage.')
+                        print('\nThe', opponents[iter_val].name, 'does',opponents[iter_val].dam - player_1.ac, 'damage.')
                         player_1.hp = player_1.hp - (opponents[iter_val].dam - player_1.ac)
 
                     iter_val += 1
