@@ -1,180 +1,82 @@
 from random import randint
 
 class Character:
-    def __init__(self, player_num):
-        print('\nREADY PLAYER', player_num)
-        self.p_name = str(input('Name:'))
-        self.inventory = {'weps':{},'items':{'health potion':2}, 'gold':0}
-        print('\nclasses')
-        print(' Warrior: 10 HP, 2 AC, 0 stealth, 1 speed')
-        print(' Mage: 8 HP, 1 AC, 1 stealth, 2 speed')
-        print(' Rogue: 6 hp, 0 AC, 2 stealth, 3 speed')
-        dave = False
-        while dave == False:
-            self.p_class = str(input('class:'))
-            dave = self.setup(self.p_class.lower())
+    def __init__(self, name):
+        self.weps = {}
+        self.spells = {}
+        self.items = {'health potion':2}
+        self.gold = 0
+        self.p_name = name
 
-    def bonus(self, bools):
-        if bools[0] == True:
-            self.stealth += 1
-        elif bools[1] == True:
-            self.speed += 1
-        elif bools[2] == True:
-            self.ac += 1
-        elif bools[3] == True:
-            self.hp += 1
-        elif bools[4] == True:
-            self.inventory['items']['health potion'] += 1
-        elif bools[5] == True:
-            self.inventory['weps']['Health Spell'] = 2
+class Rogue(Character):
+    name = 'rogue'
+    max_hp = 6
+    speed = 3
+    stealth = 2
 
-    def setup(self,clss):
-        """
-            Class dic works like:
-            After Name:
-                0=[stealth, speed, ac, hp],
-                1= The option prompts to print,
-                2.0= first option
-                2.1= List of Bools. Bools go 0:stealth, 1:speed, 2:ac, 3:HP, 4: health potion, 5: Health spell
-        """
-        classes = {
-            'warrior':
-            [
-            [0,1,2,10],
-            '1: One big sword ( 5 damage )or \n2: One sword and sheild ( 3 damage, +1 AC)',
-            [
-            [['Big sword',5], [False,False,False,False,False,False]],
-            [['Sword', 3], [False,False,True,False,False,False]]
-            ]
-            ],
+    def __init__(self, option, name):
+        Character.__init__(self, name)
+        self.hp = 6
+        self.ac = 0
+        if option == 1:
+            self.choice_1()
+        elif option == 2:
+            self.choice_2()
 
-            'mage':
-            [
-                [1,2,1,8],
-                '1: One super damage spell ( health ) + health potion \n2: One regular damage spell ( 2 damage ) + 1 healing spell',
-                [
-                    [
-                        ['Super Spell',4],
-                        [False,False,False,False,True,False]
-                    ],
-                    [
-                        ['Attack Spell',2],
-                        [False,False,False,False,False,True]
-                    ]
-                ]
-            ],
-            'rogue':
-            [
-                [2,3,0,6],
-                '1: Knives + health potion \n2: Knives + better cloak',
-                [
-                    [
-                        ['Knives',2],
-                        [False,False,False,False,True,False]
-                    ],
-                    [
-                        ['Knives',2],
-                        [True,False,False,False,False,False]
-                    ]
-                ]
-            ]
-            }
+    def choice_1(self):
+        self.weps['knives'] = 2
+        self.items['health potion'] += 1
 
-        if clss in classes:
-            self.stealth = classes[clss][0][0]
-            self.speed = classes[clss][0][1]
-            self.ac = classes[clss][0][2] #ac stands for Armour Class
-            self.hp = classes[clss][0][3]
-            self.max_hp = classes[clss][0][3]
-            print(classes[clss][1])
-            choice = int(input('- '))
-            if choice == 1:
-                self.inventory['weps'][classes[clss][2][0][0][0]] = classes[clss][2][0][0][1]
-                #print(classes[clss][2][0][0][0], classes[clss][2][0][0][1])
-                self.bonus(classes[clss][2][0][1])
-                #print(classes[clss][2][0][1])
-                return True
-            elif choice == 2:
-                self.inventory['weps'][classes[clss][2][1][0][0]] = classes[clss][2][1][0][1]
-                #print(classes[clss][2][1][0][0], classes[clss][2][1][0][1])
-                self.bonus(classes[clss][2][1][1])
-                #print(classes[clss][2][1][1])
-                return True
-        return False
+    def choice_2(self):
+        self.weps['knives'] = 2
+        self.items['shawl of silence'] = 1
+        self.stealth += 1
 
-    def setup(self,clss):
-        """
-            Class dic works like:
-            After Name:
-                0=[stealth, speed, ac, hp],
-                1= The option prompts to print,
-                2.0= first option
-                2.1= List of Bools. Bools go 0:stealth, 1:speed, 2:ac, 3:HP, 4: health potion, 5: Health spell
-        """
-        classes = {
-            'warrior':
-            [
-            [0,1,2,10],
-            '1: One big sword or \n2: One sword and sheild',
-            [
-            [['big sword',5], [False,False,False,False,False,False]],
-            [['sword', 3], [False,False,True,False,False,False]]
-            ]
-            ],
+class Mage(Character):
+    name = 'mage'
+    max_hp = 8
+    speed = 2
+    stealth = 1
 
-            'mage':
-            [
-                [1,2,1,8],
-                '1: One super damage spell + health potion \n2: One reg damage spell + 1 healing spell',
-                [
-                    [
-                        ['super spell',4],
-                        [False,False,False,False,True,False]
-                    ],
-                    [
-                        ['attack spell',2],
-                        [False,False,False,False,False,True]
-                    ]
-                ]
-            ],
-            'rogue':
-            [
-                [2,3,0,6],
-                '1: Knives + health potion \n2: Knives + better cloak',
-                [
-                    [
-                        ['knives',2],
-                        [False,False,False,False,True,False]
-                    ],
-                    [
-                        ['knives',2],
-                        [True,False,False,False,False,False]
-                    ]
-                ]
-            ]
-            }
+    def __init__(self, option, name):
+        Character.__init__(self, name)
+        self.hp = 8
+        self.ac = 1
+        if option == 1:
+            self.choice_1()
+        elif option == 2:
+            self.choice_2()
 
-        if clss in classes:
-            self.stealth = classes[clss][0][0]
-            self.speed = classes[clss][0][1]
-            self.ac = classes[clss][0][2] #ac stands for Armour Class
-            self.hp = classes[clss][0][3]
-            self.max_hp = classes[clss][0][3]
-            print(classes[clss][1])
-            choice = int(input('- '))
-            if choice == 1:
-                self.inventory['weps'][classes[clss][2][0][0][0]] = classes[clss][2][0][0][1]
-                #print(classes[clss][2][0][0][0], classes[clss][2][0][0][1])
-                self.bonus(classes[clss][2][0][1])
-                #print(classes[clss][2][0][1])
-                return True
-            elif choice == 2:
-                self.inventory['weps'][classes[clss][2][1][0][0]] = classes[clss][2][1][0][1]
-                #print(classes[clss][2][1][0][0], classes[clss][2][1][0][1])
-                self.bonus(classes[clss][2][1][1])
-                #print(classes[clss][2][1][1])
-                return True
-        return False
+    def choice_1(self):
+        self.spells['super spell'] = 3
+        self.items['health potion'] += 1
+
+    def choice_2(self):
+        self.spells['attack spell'] = 2
+        self.spells['healing spell'] = 4
+
+class Warrior(Character):
+    name = 'warrior'
+    max_hp = 10
+    speed = 1
+    stealth = 0
+
+    def __init__(self, option, name):
+        Character.__init__(self, name)
+        self.hp = 10
+        self.ac = 2
+        if option == 1:
+            self.choice_1()
+        elif option == 2:
+            self.choice_2()
+
+    def choice_1(self):
+        self.weps['big sword'] = 5
+
+    def choice_2(self):
+        self.weps['broad sword'] = 3
+        self.items['sheild'] = 1
+        self.ac += 1
 
 class Enemy:
     def __init__(self):
@@ -201,8 +103,9 @@ def attack(player, numbered_opponents):
         weapon = weapon.lower()
         if weapon == 'exit' or weapon == 'quit' or weapon == 'stop':
             return None, None
-        if weapon in player.inventory['weps']:
-            damage = player.inventory['weps'][weapon]
+
+        if weapon in player.weps:
+            damage = player.weps[weapon]
             _condition = True
 
     _condition = False
@@ -221,10 +124,34 @@ def attack(player, numbered_opponents):
             print('The',numbered_opponents[opponent].name,'took',damage,'damage.')
             _condition = True
 
-    #if numbered_opponents[opponent].hp < 1:
-    #    _ = input('Press any key to continue. \n')
-
     return damage, opponent
+
+    _condition = False
+    print('Your spells are:')
+    for spell, damage in player.spells:
+        if spell == 'healing spell':
+            print('- Healing spell ( fuck yeah )')
+
+        else:
+            print('- {0} ( does {1} damage)'.format(spell, damage))
+
+    print('')
+    while _condition == False:
+        print('What spell:')
+        spell = str(input('- '))
+        if spell in player.spells:
+            damage = player.spells[spell]
+
+        elif spell == 'none' or spell == 'exit' or spell == 'stop':
+            return
+
+    while _condition == False:
+        print('Who you attacken')
+        target = str(input('- '))
+        if target in numbered_opponents:
+            print('{0} took {1} damage.'.format(target.title(), damage))
+
+    return damage, target
 
 
 """
@@ -234,12 +161,41 @@ def attack(player, numbered_opponents):
         ###     numbered_opponents: DICT of instnaces, with number keys to each instance, for
 """
 
+def spell(player, numbered_opponents):
+    _condition = False
+    while _condition == False:
+        print('What spell bruh: ')
+        spell = str(input('- '))
+        if spell.lower() in player.spells:
+            damage = player.spells[spell]
+            print('\nWho you attacken bruh?')
+            for key, val in sorted(numbered_opponents.items()):
+                print(key ,':', val.name, '( HP:',val.hp,'Damage:',val.dam,')')
+
+            target = int(input('- '))
+            if target in numbered_opponents:
+                print('{0} took {1} damage.'.format(numbered_opponents[target].name, damage))
+                return damage, target
+
 print('How many players? (1 - 3)')
 num_players = int(input('- '))
 players = []
 dead_players = []
+classes = {'mage':Mage,'rogue':Rogue,'warrior':Warrior}
+options = {'warrior':'1: One big sword ( 5 damage )or \n2: One sword and sheild ( 3 damage, +1 AC)','mage':'1: One super damage spell ( 3 ) + health potion \n2: One regular damage spell ( 2 damage ) + 1 healing spell','rogue':'1: Knives + health potion \n2: Knives + better cloak'}
 for player in range(1,num_players+1):
-    players.append(Character(player))
+    print('READY PLAYER',player)
+    name = str(input('Name: '))
+    print('Choose a class: ')
+    print(' Warrior: 10 HP, 2 AC, 0 stealth, 1 speed')
+    print(' Mage: 8 HP, 1 AC, 1 stealth, 2 speed')
+    print(' Rogue: 6 hp, 0 AC, 2 stealth, 3 speed\n')
+    player_class = str(input('- '))
+    if player_class.lower() in classes:
+        print(options[player_class.lower()])
+        option = int(input('- '))
+        new_player = classes[player_class.lower()](option, name)
+        players.append(new_player)
 
 while bool(players) == True:
     first_run = True
@@ -281,14 +237,28 @@ while bool(players) == True:
             if first_run == True:
                 actions += player_1.stealth
                 first_run = False
+
             while actions > 0:
                 print('')
                 print('You got',actions,'actions left')
                 print('What you do:')
-                print(' i: inventory \n a: attack \n h: use a health potion \n')
+                print(' i: inventory \n a: attack \n h: use a health potion \n s: cast a spell')
                 choice = str(input('- '))
                 if choice.lower() == 'i':
-                    print("Items:",player_1.inventory['items'],'\nWeapons:',str(player_1.inventory['weps']))
+                    print("Items:",player_1.items,'\nWeapons:',str(player_1.weps))
+
+                elif choice.lower() == 's':
+                    damage, target = spell(player_1, numbered_opponents)
+                    if damage == None and target == None:
+                        break
+
+                    numbered_opponents[target].hp -= damage
+                    if numbered_opponents[target].hp < 1:
+                        print('\nThe',numbered_opponents[target].name,'died. \n')
+                        opponents.remove(target)
+                        del numbered_opponents[target]
+
+                    actions -= 1
 
                 elif choice.lower() == 'a':
                     damage, target = attack(player_1, numbered_opponents)
@@ -315,7 +285,7 @@ while bool(players) == True:
                 print('The room is quiet. \n')
                 print('In the rubble you each find',loot,'pieces of gold.')
                 for player in players:
-                    player.inventory['gold'] += loot
+                    player.gold += loot
 
                 _ = input('\nPress any key to continue')
 
@@ -340,9 +310,7 @@ while bool(players) == True:
                 players.remove(player_1)
                 numbered_opponents = []
 
-
-
 print('>>> GAME OVER <<< \n')
 for player in dead_players:
-    print('Well done',player.p_name,'. You got', player.inventory['gold'],'gold. Well done. \n')
+    print('Well done',player.p_name,'. You got', player.gold,'gold. Well done. \n')
     _ = input('Hit return to continue')
