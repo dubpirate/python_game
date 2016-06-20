@@ -101,7 +101,7 @@ def attack(player, numbered_opponents):
         print('What fight with bruh')
         weapon = str(input('- '))
         weapon = weapon.lower()
-        if weapon == 'exit' or weapon == 'quit' or weapon == 'stop':
+        if weapon in ['exit', 'cancel', 'stop']:
             return None, None
 
         if weapon in player.weps:
@@ -143,7 +143,7 @@ def attack(player, numbered_opponents):
             damage = player.spells[spell]
 
         elif spell == 'none' or spell == 'exit' or spell == 'stop':
-            return
+            return None, None
 
     while _condition == False:
         print('Who you attacken')
@@ -173,9 +173,20 @@ def spell(player, numbered_opponents):
                 print(key ,':', val.name, '( HP:',val.hp,'Damage:',val.dam,')')
 
             target = int(input('- '))
+            if target in ['exit','stop','quit','cancel']:
+                return None, None
+
             if target in numbered_opponents:
                 print('{0} took {1} damage.'.format(numbered_opponents[target].name, damage))
                 return damage, target
+
+
+#
+#       END OF FUNCTION DEFINITIONS
+#
+#       COMMENCING SCRIPT
+#
+
 
 print('How many players? (1 - 3)')
 num_players = int(input('- '))
@@ -232,7 +243,7 @@ while bool(players) == True:
                 'h':heal,
                 'n':nothing
                 }
-                '''
+            '''
             actions = player_1.speed
             if first_run == True:
                 actions += player_1.stealth
@@ -242,36 +253,39 @@ while bool(players) == True:
                 print('')
                 print('You got',actions,'actions left')
                 print('What you do:')
-                print(' i: inventory \n a: attack \n h: use a health potion \n s: cast a spell')
+                print(' i: inventory \n a: attack \n h: use a health potion \n s: cast a spell \n e: end turn')
                 choice = str(input('- '))
                 if choice.lower() == 'i':
                     print("Items:",player_1.items,'\nWeapons:',str(player_1.weps))
 
+                elif choice == 'e':
+                    actions = 0
+
                 elif choice.lower() == 's':
                     damage, target = spell(player_1, numbered_opponents)
-                    if damage == None and target == None:
-                        break
+                    if damage and target == None:
+                        pass
 
-                    numbered_opponents[target].hp -= damage
-                    if numbered_opponents[target].hp < 1:
-                        print('\nThe',numbered_opponents[target].name,'died. \n')
-                        opponents.remove(target)
-                        del numbered_opponents[target]
-
-                    actions -= 1
+                    else:
+                        numbered_opponents[target].hp -= damage
+                        if numbered_opponents[target].hp < 1:
+                            print('\nThe',numbered_opponents[target].name,'died. \n')
+                            #opponents.remove(target)
+                            del numbered_opponents[target]
+                            actions -= 1
 
                 elif choice.lower() == 'a':
                     damage, target = attack(player_1, numbered_opponents)
-                    if damage == None and target == None:
-                        break
+                    if (damage and target) == None:
+                        pass
 
-                    numbered_opponents[target].hp -= damage
-                    if numbered_opponents[target].hp < 1:
-                        print('\nThe',numbered_opponents[target].name,'died. \n')
-                        del numbered_opponents[target]
-                        opponents.remove(target)
-
-                    actions -= 1
+                    else:
+                        numbered_opponents[target].hp -= damage
+                        if numbered_opponents[target].hp < 1:
+                            print('\nThe',numbered_opponents[target].name,'died. \n')
+                            del numbered_opponents[target]
+                            #opponents.remove(target)
+                            actions -= 1
 
                 elif choice.lower() == 'h':
                     print('\nYou used a health potion to heal. \n')
@@ -290,14 +304,14 @@ while bool(players) == True:
                 _ = input('\nPress any key to continue')
 
             else:
-                iter_val = 0
-                for item in numbered_opponents:
-                    if opponents[iter_val].dam - player_1.ac <= 0:
-                        print('\nThe', opponents[iter_val].name + "'s attack was uneffective and did no damage.")
+                iter_val = 1
+                for key, _enemy in numbered_opponents.items():
+                    if _enemy.dam - player_1.ac <= 0:
+                        print('\nThe', _enemy.name + "'s attack was uneffective and did no damage.")
 
                     else:
-                        print('\nThe', opponents[iter_val].name, 'does',opponents[iter_val].dam - player_1.ac, 'damage.')
-                        player_1.hp = player_1.hp - (opponents[iter_val].dam - player_1.ac)
+                        print('\nThe', _enemy.name, 'does', _enemy.dam - player_1.ac, 'damage.')
+                        player_1.hp = player_1.hp - (_enemy.dam - player_1.ac)
 
                     iter_val += 1
                     print('You now have',player_1.hp,'health left \n')
@@ -312,5 +326,5 @@ while bool(players) == True:
 
 print('>>> GAME OVER <<< \n')
 for player in dead_players:
-    print('Well done',player.p_name,'. You got', player.gold,'gold. Well done. \n')
-    _ = input('Hit return to continue')
+    print('Well done',player.p_name +'. You got', player.gold,'gold. Well done. \n')
+    _ = input('Hit return to finish')
