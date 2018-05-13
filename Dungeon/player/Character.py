@@ -1,27 +1,57 @@
 from random import randint
 
 class Character:
-    def __init__(self, name):
+    def __init__(self, name, max_hp, speed, stealth, ac):
         self.weps = {}
         self.spells = {}
         self.items = {'health potion':2}
         self.gold = 0
         self.p_name = name
 
+        self.max_hp = max_hp
+        self.hp = max_hp
+        self.speed = speed
+        self.stealth = stealth
+        self.ac = ac
+
+    def attack(self, enemies, type):
+        if type == 'weapons':
+            attack_type = self.weps
+        else:
+            attack_type = self.spells
+
+        print('Your ', type + ':')
+        print_item_options(attack_type)
+
+        print('Choose your', type + ':')
+        choice = str(input('- '))
+
+        if choice.lower() in attack_type:
+            return attack_type[choice]
+
+        return 0
+
+    def print_item_options(self, group):
+        for item, _ in group:
+            print(' > ', item)
+
 class Rogue(Character):
     name = 'rogue'
-    max_hp = 6
-    speed = 3
-    stealth = 2
+    choice_1_description = '1: Knives ( 2 Damage ) + health potion'
+    choice_2_description = '2: Knives ( 2 Damage ) + better cloak'
 
-    def __init__(self, option, name):
-        Character.__init__(self, name)
-        self.hp = 6
-        self.ac = 0
-        if option == 1:
-            self.choice_1()
-        elif option == 2:
-            self.choice_2()
+    def __init__(self, name):
+        Character.__init__(self, name, 6, 3, 2, 0)
+        subclass
+
+    def subclass():
+        print(self.choice_1_description)
+        print(self.choice_2_description)
+        choice = int(input("- "))
+        if choice == 1:
+            choice_1()
+        else:
+            choice_2()
 
     def choice_1(self):
         self.weps['knives'] = 2
@@ -34,18 +64,21 @@ class Rogue(Character):
 
 class Mage(Character):
     name = 'mage'
-    max_hp = 8
-    speed = 2
-    stealth = 1
+    choice_1_description = '1: One super damage spell ( 3 damage ) + health potion'
+    choice_2_description = '2: One regular damage spell ( 2 damage ) + 1 healing spell'
 
-    def __init__(self, option, name):
-        Character.__init__(self, name)
-        self.hp = 8
-        self.ac = 1
-        if option == 1:
-            self.choice_1()
-        elif option == 2:
-            self.choice_2()
+    def __init__(self, name):
+        Character.__init__(self, name, 8, 2, 1, 1)
+        subclass()
+
+    def subclass():
+        print(self.choice_1_description)
+        print(self.choice_2_description)
+        choice = int(input("- "))
+        if choice == 1:
+            choice_1()
+        else:
+            choice_2()
 
     def choice_1(self):
         self.spells['super spell'] = 3
@@ -53,22 +86,25 @@ class Mage(Character):
 
     def choice_2(self):
         self.spells['attack spell'] = 2
-        self.spells['healing spell'] = 4
+        self.spells['health potion'] += 2
 
 class Warrior(Character):
     name = 'warrior'
-    max_hp = 10
-    speed = 1
-    stealth = 0
+    choice_1_description = '1: One big sword ( 5 damage )'
+    choice_2_description = '2: One sword and sheild ( 3 damage, +1 AC )'
 
-    def __init__(self, option, name):
-        Character.__init__(self, name)
-        self.hp = 10
-        self.ac = 2
-        if option == 1:
-            self.choice_1()
-        elif option == 2:
-            self.choice_2()
+    def __init__(self, name):
+        Character.__init__(self, name, 10, 1, 0, 2)
+        subclass()
+
+    def subclass():
+        print(self.choice_1_description)
+        print(self.choice_2_description)
+        choice = int(input("- "))
+        if choice == 1:
+            choice_1()
+        else:
+            choice_2()
 
     def choice_1(self):
         self.weps['big sword'] = 5
