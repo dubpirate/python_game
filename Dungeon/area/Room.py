@@ -1,11 +1,11 @@
 from random import randint
-from enemy.Enemy import Enemy
+from Dungeon.enemy.Enemy import Enemy
 
-class Room: #haha, classroom
+class Room:
 
     def __init__(self):
         self.first_run = True
-        self.enemies = generate_enemies()
+        self.enemies = self.generate_enemies()
         self.loot = randint(10, 50)
         self.intros = [
             '- A spoopy {0} with a {1}',
@@ -22,20 +22,21 @@ class Room: #haha, classroom
 
     def start_combat(self):
         print('\nIn the room, there is:')
-        for i in range(0, len(enemies)):
+        for i in range(0, len(self.enemies)):
             print(intros[i].format(
                 enemies[i].name,
                 enemies[i].wep))
 
     def player_actions(self, player):
         if self.first_run:
+            self.first_run = False
             return player.stealth + player.speed
 
         return player.speed
 
     def player_turn(self, player, first_run):
         print('\nYour turn,', player.p_name)
-        actions = player_actions(player)
+        actions = self.player_actions(player)
 
         while actions > 0:
             print('You got', actions, 'actions left.')
@@ -46,7 +47,7 @@ class Room: #haha, classroom
                 print("Items:", player.items, '\nWeapons:', str(player.weps), '\nSpells', str(player.spells))
 
             elif choice.lower() in ['s', 'a']:
-                player_attack(self, choice)
+                self.player_attack(choice, player)
 
             elif choice.lower() == 'h':
                 print('\nYou used a health potion to heal. \n')
@@ -59,13 +60,13 @@ class Room: #haha, classroom
 
             _ = input('Press any key to continue.')
 
-    def player_attack(self, choice):
+    def player_attack(self, choice, player):
         if choice.lower() == 's':
             type = 'spells'
         else:
             type = 'weapons'
 
-        damage = attack(player, enemies, type)
+        damage = player.attack(enemies, type)
 
         if damage == 0:
             pass
@@ -76,14 +77,30 @@ class Room: #haha, classroom
                 print('\nThe',numbered_opponents[target].name,'died. \n')
                 del numbered_opponents[target]
 
-    def enemy_attack(self, player):
+    def enemy_turn(self, players, dead_players):
         for enemy in enemies:
-            if enemy.dam - player.ac <= 0:
+            chosen = randint(0,len(players))
+            if (enemy.dam - players[chosen].ac <= 0):
                 print('\nThe', enemy.name + "'s attack was uneffective and did no damage.")
-                return 0
+
             else:
-                print('\nThe', enemy.name, 'does', enemy.dam - player.ac, 'damage.')
-                print('You now have', player.hp, 'health left \n')
-                return enemy.dam - player.ac
+                players[chosen].hp -= enemy.dam - players[chosen].ac
+                print('\nThe', enemy.name, 'does', enemy.dam - players[chosen].ac, 'damage.')
+                if players[chosen].hp < 0:
+                    print('oh no,', player[chosen].hp, 'died')
+                    dead_players.append(players[chosen])
+                    player.remove(chosen)
+
+                else:
+                    print('You now have', players[chosen].hp, 'health left \n')
+
+        return players, dead_players
 
         _ = input('Press any key to continue.')
+
+    def divy_treasure(self, players):
+        print("The room is quiet. You each find", this.loot)
+        for player in players:
+            player.gold += self.loot
+
+        return players

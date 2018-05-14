@@ -21,7 +21,7 @@ class Character:
             attack_type = self.spells
 
         print('Your ', type + ':')
-        print_item_options(attack_type)
+        self.print_item_options(attack_type)
 
         print('Choose your', type + ':')
         choice = str(input('- '))
@@ -42,16 +42,16 @@ class Rogue(Character):
 
     def __init__(self, name):
         Character.__init__(self, name, 6, 3, 2, 0)
-        subclass
+        self.subclass()
 
-    def subclass():
+    def subclass(self):
         print(self.choice_1_description)
         print(self.choice_2_description)
         choice = int(input("- "))
         if choice == 1:
-            choice_1()
+            self.choice_1()
         else:
-            choice_2()
+            self.choice_2()
 
     def choice_1(self):
         self.weps['knives'] = 2
@@ -69,16 +69,16 @@ class Mage(Character):
 
     def __init__(self, name):
         Character.__init__(self, name, 8, 2, 1, 1)
-        subclass()
+        self.subclass()
 
-    def subclass():
+    def subclass(self):
         print(self.choice_1_description)
         print(self.choice_2_description)
         choice = int(input("- "))
         if choice == 1:
-            choice_1()
+            self.choice_1()
         else:
-            choice_2()
+            self.choice_2()
 
     def choice_1(self):
         self.spells['super spell'] = 3
@@ -95,16 +95,16 @@ class Warrior(Character):
 
     def __init__(self, name):
         Character.__init__(self, name, 10, 1, 0, 2)
-        subclass()
+        self.subclass()
 
-    def subclass():
+    def subclass(self):
         print(self.choice_1_description)
         print(self.choice_2_description)
         choice = int(input("- "))
         if choice == 1:
-            choice_1()
+            self.choice_1()
         else:
-            choice_2()
+            self.choice_2()
 
     def choice_1(self):
         self.weps['big sword'] = 5
