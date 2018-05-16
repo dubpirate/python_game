@@ -1,11 +1,11 @@
 from random import randint
+from Dungeon.inventory.Inventory import Inventory
+from Dungeon.inventory.Weapon import Weapon
+from Dungeon.inventory.HealingSpell import HealingSpell
 
 class Character:
     def __init__(self, name, max_hp, speed, stealth, ac):
-        self.weps = {}
-        self.spells = {}
-        self.items = {'health potion':2}
-        self.gold = 0
+        self.inventory = Inventory()
         self.p_name = name
 
         self.max_hp = max_hp
@@ -14,31 +14,42 @@ class Character:
         self.stealth = stealth
         self.ac = ac
 
-    def attack(self, enemies, type):
-        if type == 'weapons':
-            attack_type = self.weps
-        else:
-            attack_type = self.spells
 
-        print('Your ', type + ':')
-        self.print_item_options(attack_type)
+    def choose_weapon(self):
+        self.list_weapons()
+        choice = str(input(" - "))
+        for weapon in self.inventory.weapons:
+            if weapon.name == choice:
+                return weapon
 
-        print('Choose your', type + ':')
-        choice = str(input('- '))
+    def choose_spell(self):
+        choice = str(input(" - "))
+        for spell in self.inventory.spells:
+            if spell.name == choice:
+                return spell
 
-        if choice.lower() in attack_type:
-            return attack_type[choice]
+    def list_weapons(self):
+        for weapon in self.inventory.weapons:
+            weapon.print_name()
 
-        return 0
+    def list_items(self):
+        for item in self.inventory.items:
+            item.print_name()
 
-    def print_item_options(self, group):
-        for item, _ in group:
-            print(' > ', item)
+    def list_spells(self):
+        for spell in self.inventory.spells:
+            spell.print_name()
+
+    def add_gold(self, amount):
+        self.inventory.gold += amount
+
+    def get_gold(self):
+        return self.inventory.gold
 
 class Rogue(Character):
     name = 'rogue'
     choice_1_description = '1: Knives ( 2 Damage ) + health potion'
-    choice_2_description = '2: Knives ( 2 Damage ) + better cloak'
+    choice_2_description = '2: Knives ( 2 Damage ) + better cloak ( more actions )'
 
     def __init__(self, name):
         Character.__init__(self, name, 6, 3, 2, 0)
@@ -54,12 +65,12 @@ class Rogue(Character):
             self.choice_2()
 
     def choice_1(self):
-        self.weps['knives'] = 2
-        self.items['health potion'] += 1
+        self.inventory.add_weapon('knife')
+        self.inventory.health_potions += 1
 
     def choice_2(self):
-        self.weps['knives'] = 2
-        self.items['shawl of silence'] = 1
+        self.inventory.add_weapon('knife')
+        self.inventory.add_item('shawl of silence')
         self.stealth += 1
 
 class Mage(Character):
@@ -81,16 +92,16 @@ class Mage(Character):
             self.choice_2()
 
     def choice_1(self):
-        self.spells['super spell'] = 3
-        self.items['health potion'] += 1
+        self.inventory.add_weapon('fireball')
+        self.inventory.health_potions += 1
 
     def choice_2(self):
-        self.spells['attack spell'] = 2
-        self.spells['health potion'] += 2
+        self.inventory.add_weapon('frost ray')
+        self.inventory.add_spell('healing spell')
 
 class Warrior(Character):
     name = 'warrior'
-    choice_1_description = '1: One big sword ( 5 damage )'
+    choice_1_description = '1: One long sword ( 5 damage )'
     choice_2_description = '2: One sword and sheild ( 3 damage, +1 AC )'
 
     def __init__(self, name):
@@ -107,9 +118,9 @@ class Warrior(Character):
             self.choice_2()
 
     def choice_1(self):
-        self.weps['big sword'] = 5
+        self.inventory.add_weapon('long sword')
 
     def choice_2(self):
-        self.weps['broad sword'] = 3
-        self.items['sheild'] = 1
+        self.inventory.add_weapon('broad sword')
+        self.inventory.add_item('sheild')
         self.ac += 1

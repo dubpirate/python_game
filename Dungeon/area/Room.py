@@ -23,9 +23,11 @@ class Room:
     def start_combat(self):
         print('\nIn the room, there is:')
         for i in range(0, len(self.enemies)):
-            print(intros[i].format(
-                enemies[i].name,
-                enemies[i].wep))
+            print(self.intros[i].format(
+                self.enemies[i].name,
+                self.enemies[i].weapon_name()))
+
+        _ = input("(press any key to continue)")
 
     def player_actions(self, player):
         if self.first_run:
@@ -34,73 +36,102 @@ class Room:
 
         return player.speed
 
-    def player_turn(self, player, first_run):
+    def player_turn(self, player):
         print('\nYour turn,', player.p_name)
         actions = self.player_actions(player)
 
-        while actions > 0:
+        while actions > 0 and len(self.enemies) > 0:
             print('You got', actions, 'actions left.')
-            print(' i: inventory \n a: attack \n h: use a health potion \n s: cast a spell \n e: end turn')
+            print(' i: inventory \n a: attack \n s: cast a spell')
+            print(' h: use a health potion \n e: end turn')
             choice = str(input('- '))
 
             if choice.lower() == 'i':
-                print("Items:", player.items, '\nWeapons:', str(player.weps), '\nSpells', str(player.spells))
+                player.inventory.list_items()
 
-            elif choice.lower() in ['s', 'a']:
-                self.player_attack(choice, player)
+            elif choice.lower() == 'a':
+                self.player_attack(player)
+
+            elif choice.lower() == 's':
+                self.player_cast_spell(player)
 
             elif choice.lower() == 'h':
                 print('\nYou used a health potion to heal. \n')
-                player_1.hp = player_1.max_hp
-                print('You have', player_1.hp, 'health points left. \n')
+                player.inventory.health_potions -= 1
+                player.hp = player.max_hp
+                print('You are at Full Health! ('+ str(player.hp) +')\n')
                 actions -= 1
 
             elif choice == 'e':
                 actions = 0
 
+            actions -= 1
             _ = input('Press any key to continue.')
 
-    def player_attack(self, choice, player):
-        if choice.lower() == 's':
-            type = 'spells'
-        else:
-            type = 'weapons'
+    def player_attack(self, player):
+        weapon = player.choose_weapon()
 
-        damage = player.attack(enemies, type)
+        print('\nWho do you want to attack:')
+        self.print_enemies()
+        target = int(input('- '))
 
-        if damage == 0:
-            pass
+        self.enemies[target].hp -= weapon.damage
+        print(self.enemies[target].name, "takes", weapon.damage, "points of damage", end='')
+
+        if self.enemies[target].hp < 1:
+            print(' and dies. \n')
+            del self.enemies[target]
         else:
-            numbered_opponents[target].hp -= damage
-            actions -= 1
-            if numbered_opponents[target].hp < 1:
-                print('\nThe',numbered_opponents[target].name,'died. \n')
-                del numbered_opponents[target]
+            print('.\n')
+
+    def player_cast_spell(self, player):
+        print('Choose your Spell:')
+        player.list_spells()
+        spell = player.choose_spell()
+
+        print('Who do you want to cast it on:')
+        target = self.print_players()
+
+        players.remove(target)
+        players.append(spell.cast(target))
+
+    def print_enemies(self):
+        for enemy in self.enemies:
+            print("("+str(self.enemies.index(enemy))+")",enemy.name)
+
+
+    def choose_players(self):
+        for player in self.players:
+            print("("+str(self.players.index(player))+")",player.p_name)
+
+        return players[int(input('- '))]
 
     def enemy_turn(self, players, dead_players):
-        for enemy in enemies:
-            chosen = randint(0,len(players))
-            if (enemy.dam - players[chosen].ac <= 0):
-                print('\nThe', enemy.name + "'s attack was uneffective and did no damage.")
-
-            else:
-                players[chosen].hp -= enemy.dam - players[chosen].ac
-                print('\nThe', enemy.name, 'does', enemy.dam - players[chosen].ac, 'damage.')
-                if players[chosen].hp < 0:
-                    print('oh no,', player[chosen].hp, 'died')
-                    dead_players.append(players[chosen])
-                    player.remove(chosen)
+        for enemy in self.enemies:
+            if len(players) > 0:
+                chosen = randint(0,len(players)-1)
+                if (enemy.attack() - players[chosen].ac <= 0):
+                    print('\nThe', enemy.name + "'s attack was uneffective and did no damage.")
 
                 else:
-                    print('You now have', players[chosen].hp, 'health left \n')
+                    players[chosen].hp -= enemy.attack() - players[chosen].ac
+                    print('\nThe', enemy.name, 'does', enemy.attack() - players[chosen].ac, 'damage.')
+                    if players[chosen].hp <= 0:
+                        print('oh no,', players[chosen].p_name, 'died')
+                        dead_players.append(players[chosen])
+                        players.remove(players[chosen])
+                        break
 
+                    else:
+                        print('You now have', players[chosen].hp, 'health left')
+
+        _ = input("(press any key to continue)")
         return players, dead_players
 
-        _ = input('Press any key to continue.')
-
     def divy_treasure(self, players):
-        print("The room is quiet. You each find", this.loot)
+        print("The room is quiet. You find", self.loot, "pieces of gold.")
         for player in players:
-            player.gold += self.loot
+            player.add_gold(self.loot)
 
+        _ = input("(press any key to continue)")
         return players
